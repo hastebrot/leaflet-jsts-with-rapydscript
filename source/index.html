@@ -1,14 +1,14 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><script src="../vendor/jquery-2.1.1/jquery.js"></script><script src="../vendor/rapydscript-0.2-dev/utils.js"></script><script src="../vendor/rapydscript-0.2-dev/ast.js"></script><script src="../vendor/rapydscript-0.2-dev/baselib.js"></script><script src="../vendor/rapydscript-0.2-dev/output.js"></script><script src="../vendor/rapydscript-0.2-dev/parse.js"></script><script src="../vendor/leaflet-0.13.4/leaflet.js"></script><script src="../vendor/jsts-0.13.4/javascript.util.js"></script><script src="../vendor/jsts-0.13.4/jsts.js"></script><script src="../vendor/jsts-0.13.4/simplify.js"></script><link rel="stylesheet" href="../vendor/leaflet-0.8-dev/leaflet.css"><style>pre {
+<!DOCTYPE html><html><head><meta charset="utf-8"><script src="../vendor/jquery-2.1.1/jquery.js"></script><script src="../vendor/rapydscript-0.2-dev/utils.js"></script><script src="../vendor/rapydscript-0.2-dev/ast.js"></script><script src="../vendor/rapydscript-0.2-dev/baselib.js"></script><script src="../vendor/rapydscript-0.2-dev/output.js"></script><script src="../vendor/rapydscript-0.2-dev/parse.js"></script><script src="../vendor/leaflet-0.8-dev/leaflet.js"></script><script src="../vendor/jsts-0.13.4/javascript.util.js"></script><script src="../vendor/jsts-0.13.4/jsts.js"></script><script src="../vendor/jsts-0.13.4/simplify.js"></script><link rel="stylesheet" href="../vendor/leaflet-0.8-dev/leaflet.css"><style>pre {
   padding: 10px;
   border: 1px solid #aaa;
   /*display: inline-block;*/
   white-space: pre-wrap;
 }
-</style><script src="scriptEngine.js"></script><script>$(function() {
-  var sourceFile = "basicJsts.pyj";
+</style><script src="scriptEngine.js"></script><script>var loadScriptFile = function(scriptFileUrl) {
   var $sourceCode = $("#sourceCode");
   var $transpiledCode = $("#transpiledCode");
   var $outputMessages = $("#outputMessages");
+  var $showcase = $("#showcase");
   
   window._$rapyd$_print = function() {
     var args = [].slice.call(arguments, 0);
@@ -17,7 +17,7 @@
     $outputMessages.text($outputMessages.text() + message);
   }
   
-  $.get(sourceFile, function(data) {
+  $.get(scriptFileUrl, function(data) {
     var parserOptions = {
       filename: "<stdin>",
       toplevel: null,
@@ -31,9 +31,11 @@
     };
     
     try {
+      $showcase.html(null);
+      $outputMessages.text("");
       $sourceCode.text(data);
       var transpiledCode = transpile($sourceCode.text(),
-                                     parserOptions, compilerOptions);
+        parserOptions, compilerOptions);
       $transpiledCode.text(transpiledCode);
       execute(transpiledCode);
     }
@@ -41,5 +43,13 @@
       alert(error.toString())
     }
   });
+};
+
+$(function() {
+  $("#sourceFile").on("change", function() {
+    loadScriptFile(this.value);
+  });
+  var sourceFile = $("#sourceFile").val();
+  loadScriptFile(sourceFile);
 });
-</script></head><body><pre id="sourceCode"></pre><pre id="transpiledCode"></pre><pre><code id="outputMessages"></code></pre></body></html>
+</script></head><body><select id="sourceFile"><option value="basicTopologySuite.pyj">basicTopologySuite.pyj</option><option value="basicLeaflet.pyj">basicLeaflet.pyj</option><option value="basicPython.pyj">basicPython.pyj</option></select><pre id="sourceCode"></pre><pre id="transpiledCode"></pre><pre id="outputMessages"></pre><div id="showcase"></div></body></html>

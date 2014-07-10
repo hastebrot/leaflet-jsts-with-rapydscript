@@ -8,7 +8,7 @@ html
     script(src="../vendor/rapydscript-0.2-dev/baselib.js")
     script(src="../vendor/rapydscript-0.2-dev/output.js")
     script(src="../vendor/rapydscript-0.2-dev/parse.js")
-    script(src="../vendor/leaflet-0.13.4/leaflet.js")
+    script(src="../vendor/leaflet-0.8-dev/leaflet.js")
     script(src="../vendor/jsts-0.13.4/javascript.util.js")
     script(src="../vendor/jsts-0.13.4/jsts.js")
     script(src="../vendor/jsts-0.13.4/simplify.js")
@@ -24,11 +24,11 @@ html
 
     script(src="scriptEngine.js")
     script.
-      $(function() {
-        var sourceFile = "basicJsts.pyj";
+      var loadScriptFile = function(scriptFileUrl) {
         var $sourceCode = $("#sourceCode");
         var $transpiledCode = $("#transpiledCode");
         var $outputMessages = $("#outputMessages");
+        var $showcase = $("#showcase");
 
         window._$rapyd$_print = function() {
           var args = [].slice.call(arguments, 0);
@@ -37,7 +37,7 @@ html
           $outputMessages.text($outputMessages.text() + message);
         }
 
-        $.get(sourceFile, function(data) {
+        $.get(scriptFileUrl, function(data) {
           var parserOptions = {
             filename: "<stdin>",
             toplevel: null,
@@ -51,9 +51,11 @@ html
           };
 
           try {
+            $showcase.html(null);
+            $outputMessages.text("");
             $sourceCode.text(data);
             var transpiledCode = transpile($sourceCode.text(),
-                                           parserOptions, compilerOptions);
+              parserOptions, compilerOptions);
             $transpiledCode.text(transpiledCode);
             execute(transpiledCode);
           }
@@ -61,9 +63,22 @@ html
             alert(error.toString())
           }
         });
+      };
+
+      $(function() {
+        $("#sourceFile").on("change", function() {
+          loadScriptFile(this.value);
+        });
+        var sourceFile = $("#sourceFile").val();
+        loadScriptFile(sourceFile);
       });
 
   body
+    select#sourceFile
+      option(value="basicTopologySuite.pyj") basicTopologySuite.pyj
+      option(value="basicLeaflet.pyj") basicLeaflet.pyj
+      option(value="basicPython.pyj") basicPython.pyj
     pre#sourceCode
     pre#transpiledCode
-    pre: code#outputMessages
+    pre#outputMessages
+    div#showcase
