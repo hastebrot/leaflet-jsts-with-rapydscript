@@ -1,0 +1,69 @@
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    script(src="../vendor/jquery-2.1.1/jquery.js")
+    script(src="../vendor/rapydscript-0.2-dev/utils.js")
+    script(src="../vendor/rapydscript-0.2-dev/ast.js")
+    script(src="../vendor/rapydscript-0.2-dev/baselib.js")
+    script(src="../vendor/rapydscript-0.2-dev/output.js")
+    script(src="../vendor/rapydscript-0.2-dev/parse.js")
+    script(src="../vendor/leaflet-0.13.4/leaflet.js")
+    script(src="../vendor/jsts-0.13.4/javascript.util.js")
+    script(src="../vendor/jsts-0.13.4/jsts.js")
+    script(src="../vendor/jsts-0.13.4/simplify.js")
+    link(rel="stylesheet", href="../vendor/leaflet-0.8-dev/leaflet.css")
+
+    style.
+      pre {
+        padding: 10px;
+        border: 1px solid #aaa;
+        /*display: inline-block;*/
+        white-space: pre-wrap;
+      }
+
+    script(src="scriptEngine.js")
+    script.
+      $(function() {
+        var sourceFile = "basicJsts.pyj";
+        var $sourceCode = $("#sourceCode");
+        var $transpiledCode = $("#transpiledCode");
+        var $outputMessages = $("#outputMessages");
+
+        window._$rapyd$_print = function() {
+          var args = [].slice.call(arguments, 0);
+          var output = JSON.stringify(args);
+          var message = output.substr(1, output.length - 2) + "\n";
+          $outputMessages.text($outputMessages.text() + message);
+        }
+
+        $.get(sourceFile, function(data) {
+          var parserOptions = {
+            filename: "<stdin>",
+            toplevel: null,
+            basedir: null,
+            libdir: null
+          };
+          var compilerOptions = {
+            beautify: true,
+            private_scope: true,
+            omit_baselib: true
+          };
+
+          try {
+            $sourceCode.text(data);
+            var transpiledCode = transpile($sourceCode.text(),
+                                           parserOptions, compilerOptions);
+            $transpiledCode.text(transpiledCode);
+            execute(transpiledCode);
+          }
+          catch (error) {
+            alert(error.toString())
+          }
+        });
+      });
+
+  body
+    pre#sourceCode
+    pre#transpiledCode
+    pre: code#outputMessages

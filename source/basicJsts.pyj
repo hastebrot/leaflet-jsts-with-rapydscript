@@ -1,0 +1,9 @@
+reader = new jsts.io.WKTReader()
+input = reader.read("""
+    POLYGON ((100 100, 200 100, 200 200, 100 200, 100 100))
+""")
+buffer = input.buffer(20)
+print(input)
+
+writer = new jsts.io.GeoJSONWriter()
+print(writer.write(buffer))
