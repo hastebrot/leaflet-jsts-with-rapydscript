@@ -3,4 +3,7 @@ def add(a, b):
 
 print(add(2, 3))
 
+for index, value in enumerate(["foo", "bar", "baz"]):
+    print(index, value)
+
 print([n * 2 for n in range(5)])

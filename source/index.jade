@@ -12,6 +12,7 @@ html
     script(src="../vendor/jsts-0.13.4/javascript.util.js")
     script(src="../vendor/jsts-0.13.4/jsts.js")
     script(src="../vendor/jsts-0.13.4/simplify.js")
+    script(src="../vendor/ace-1.1.5/src-min-noconflict/ace.js")
     link(rel="stylesheet", href="../vendor/leaflet-0.8-dev/leaflet.css")
 
     style.
@@ -37,6 +38,17 @@ html
           $outputMessages.text($outputMessages.text() + message);
         }
 
+        var editor = ace.edit("sourceCode");
+        editor.setTheme("ace/theme/textmate");
+        editor.getSession().setMode("ace/mode/python");
+        editor.setShowPrintMargin(true);
+        //editor.setReadOnly(true);
+        editor.setShowFoldWidgets(false);
+        editor.setDisplayIndentGuides(true);
+        editor.setOptions({
+            maxLines: Infinity
+        });
+
         $.get(scriptFileUrl, function(data) {
           var parserOptions = {
             filename: "<stdin>",
@@ -53,8 +65,9 @@ html
           try {
             $showcase.html(null);
             $outputMessages.text("");
-            $sourceCode.text(data);
-            var transpiledCode = transpile($sourceCode.text(),
+            //$sourceCode.text(data);
+            editor.setValue(data, -1);
+            var transpiledCode = transpile(editor.getValue(),
               parserOptions, compilerOptions);
             $transpiledCode.text(transpiledCode);
             execute(transpiledCode);
