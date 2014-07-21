@@ -1,6 +1,7 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><script src="../vendor/jquery-2.1.1/jquery.js"></script><script src="../vendor/rapydscript-0.2-dev/utils.js"></script><script src="../vendor/rapydscript-0.2-dev/ast.js"></script><script src="../vendor/rapydscript-0.2-dev/baselib.js"></script><script src="../vendor/rapydscript-0.2-dev/output.js"></script><script src="../vendor/rapydscript-0.2-dev/parse.js"></script><script src="../vendor/leaflet-0.8-dev/leaflet.js"></script><script src="../vendor/jsts-0.13.4/javascript.util.js"></script><script src="../vendor/jsts-0.13.4/jsts.js"></script><script src="../vendor/jsts-0.13.4/simplify.js"></script><script src="../vendor/ace-1.1.5/src-min-noconflict/ace.js"></script><link rel="stylesheet" href="../vendor/leaflet-0.8-dev/leaflet.css"><style>pre {
+<!DOCTYPE html><html><head><meta charset="utf-8"><script src="../vendor/jquery-2.1.1/jquery.js"></script><script src="../vendor/rapydscript-0.2-dev/utils.js"></script><script src="../vendor/rapydscript-0.2-dev/ast.js"></script><script src="../vendor/rapydscript-0.2-dev/baselib.js"></script><script src="../vendor/rapydscript-0.2-dev/output.js"></script><script src="../vendor/rapydscript-0.2-dev/parse.js"></script><script src="../vendor/leaflet-0.8-dev/leaflet.js"></script><script src="../vendor/jsts-0.13.4/javascript.util.js"></script><script src="../vendor/jsts-0.13.4/jsts.js"></script><script src="../vendor/jsts-0.13.4/simplify.js"></script><script src="../vendor/ace-1.1.5/ace.js"></script><link rel="stylesheet" href="../vendor/leaflet-0.8-dev/leaflet.css"><style>pre {
   padding: 10px;
   border: 1px solid #aaa;
+  border-radius: 4px;
   /*display: inline-block;*/
   white-space: pre-wrap;
 }
@@ -17,14 +18,26 @@
     $outputMessages.text($outputMessages.text() + message);
   }
   
-  var editor = ace.edit("sourceCode");
+  var editor = ace.edit($sourceCode.attr("id"));
   editor.setTheme("ace/theme/textmate");
   editor.getSession().setMode("ace/mode/python");
   editor.setShowPrintMargin(true);
-  //editor.setReadOnly(true);
   editor.setShowFoldWidgets(false);
   editor.setDisplayIndentGuides(true);
   editor.setOptions({
+      maxLines: Infinity
+  });
+  
+  var viewer = ace.edit($transpiledCode.attr("id"));
+  viewer.setTheme("ace/theme/textmate");
+  viewer.getSession().setMode("ace/mode/javascript");
+  viewer.setReadOnly(true);
+  viewer.setShowFoldWidgets(false);
+  viewer.setDisplayIndentGuides(true);
+  viewer.setShowPrintMargin(false);
+  viewer.renderer.setShowGutter(false);
+  viewer.renderer.setHighlightGutterLine(false);
+  viewer.setOptions({
       maxLines: Infinity
   });
   
@@ -46,10 +59,9 @@
       $outputMessages.text("");
       //$sourceCode.text(data);
       editor.setValue(data, -1);
-      //editor.moveCursorTo(0, 0);
       var transpiledCode = transpile(editor.getValue(),
         parserOptions, compilerOptions);
-      $transpiledCode.text(transpiledCode);
+      viewer.setValue(transpiledCode, -1);
       execute(transpiledCode);
     }
     catch (error) {
@@ -60,9 +72,9 @@
 
 $(function() {
   $("#sourceFile").on("change", function() {
-    loadScriptFile(this.value);
+    loadScriptFile("../data/" + this.value);
   });
   var sourceFile = $("#sourceFile").val();
-  loadScriptFile(sourceFile);
+  loadScriptFile("../data/" + sourceFile);
 });
 </script></head><body><select id="sourceFile"><option value="basicTopologySuite.pyj">basicTopologySuite.pyj</option><option value="basicLeaflet.pyj">basicLeaflet.pyj</option><option value="basicPython.pyj">basicPython.pyj</option></select><pre id="sourceCode"></pre><pre id="transpiledCode"></pre><pre id="outputMessages"></pre><div id="showcase"></div></body></html>
